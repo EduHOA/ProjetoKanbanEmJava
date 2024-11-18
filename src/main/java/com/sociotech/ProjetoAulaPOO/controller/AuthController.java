@@ -22,10 +22,12 @@ public class AuthController {
         // Rota para cadastro de novo usuário
         @PostMapping("/cadastro")
         public ResponseEntity<Object> cadastrarUsuario(@Valid @RequestBody Usuario usuario) {
+            System.out.println("Recebido cadastro: " + usuario);
             try {
                 Usuario novoUsuario = userService.cadastrarUsuario(usuario);
                 return new ResponseEntity<>(novoUsuario, HttpStatus.CREATED);
             } catch (Exception e) {
+                e.printStackTrace(); // Log detalhado
                 return new ResponseEntity<>("Erro ao cadastrar usuário: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }

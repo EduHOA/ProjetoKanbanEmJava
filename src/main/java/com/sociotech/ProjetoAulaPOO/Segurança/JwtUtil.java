@@ -48,4 +48,6 @@ public class JwtUtil {
         Date expirationDate = claims.getExpiration();  // Obtém a data de expiração
         return expirationDate.before(new Date());  // Verifica se a data de expiração já passou
     }
+
+
 }

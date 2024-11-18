@@ -23,9 +23,8 @@ public class TarefaController {
     // Lista todas as tarefas
     @GetMapping
     public List<Tarefa> listarTarefas(HttpServletRequest request) {
-        // Recupera o userId do token JWT
         String userId = (String) request.getAttribute("userId");
-        System.out.println("UserId: " + userId); // Apenas para verificar se o id foi extraído corretamente
+        System.out.println("UserId extraído do token: " + userId); // Verifique se o ID está sendo extraído corretamente
         return tarefaService.listarTarefa();
     }
 

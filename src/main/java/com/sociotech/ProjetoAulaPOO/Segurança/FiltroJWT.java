@@ -4,56 +4,51 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-@Component
 public class FiltroJWT extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
+
+    public FiltroJWT(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-
-        // Ignora as rotas de login e cadastro
-        if (request.getRequestURI().startsWith("/auth")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = request.getHeader("Authorization");
-
-        // Verifica se o token está presente e começa com "Bearer "
         if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7); // Remove o prefixo "Bearer "
-
+            token = token.substring(7); // Remove "Bearer " do token
             try {
                 if (!jwtUtil.tokenExpirado(token)) {
-                    // Se o token for válido, extrai o ID do usuário e o coloca como atributo na requisição
-                    request.setAttribute("userId", jwtUtil.extrairUserId(token));
+                    String userId = jwtUtil.extrairUserId(token);
+                    request.setAttribute("userId", userId); // Adiciona o userId no request
+                    System.out.println("Token válido, User ID: " + userId); // Log para verificar se o token é válido
+
+                    // Autentica o usuário com base no token
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            userId, null, new ArrayList<>());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+
                 } else {
-                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                    response.getWriter().write("Token expirado.");
-                    return;
+                    System.out.println("Token expirado.");
                 }
             } catch (Exception e) {
+                System.out.println("Erro ao validar o token: " + e.getMessage());
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.getWriter().write("Token inválido.");
                 return;
             }
-        } else {
-            // Se o token não estiver presente ou não for válido
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.getWriter().write("Token não fornecido.");
-            return;
         }
-
-        filterChain.doFilter(request, response);
+        filterChain.doFilter(request, response); // Continua a cadeia de filtros
     }
 }
+
