@@ -17,7 +17,7 @@
 
 ## 2. **Tarefas**
 
-- **POST /tasks**: Cria uma nova tarefa na coluna "A Fazer".
+- **POST /tarefa**: Cria uma nova tarefa na coluna "A Fazer".
   - **Exemplo**:
     ```json
     {
