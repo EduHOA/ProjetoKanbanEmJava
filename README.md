@@ -34,7 +34,7 @@
 - **PUT /tarefa/{id}/mover**: Move uma tarefa para a próxima coluna (Status).
 
 - **PUT /tarefa/{id}/prioridade/{prioridade}**: Atualiza a prioridade de uma tarefa.
-  - **prioridade** pode ser: `BAIXA`, `MEDIA`, `ALTA`.
+  - **prioridade** pode ser: `BAIXA`, `MEDIO`, `ALTO`.
 
 - **PUT /tarefa/{id}/atualizar**: Atualiza uma tarefa (título, descrição, dataLimite).
 
